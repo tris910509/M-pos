@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="container mt-4">
-    <h3>Manajemen Produk, Kategori, Supplier, dan Transaksi</h3>
+    <h3>Manajemen Penjualan</h3>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
@@ -30,7 +30,7 @@
       <!-- Produk Tab -->
       <div class="tab-pane fade show active" id="produk" role="tabpanel">
         <h5>Manajemen Produk</h5>
-        <button class="btn btn-primary mb-3" onclick="addItem('product')">Tambah Produk</button>
+        <button class="btn btn-primary mb-3" onclick="openModal('product')">Tambah Produk</button>
         <table class="table">
           <thead>
             <tr>
@@ -48,7 +48,7 @@
       <!-- Kategori Tab -->
       <div class="tab-pane fade" id="kategori" role="tabpanel">
         <h5>Manajemen Kategori</h5>
-        <button class="btn btn-primary mb-3" onclick="addItem('category')">Tambah Kategori</button>
+        <button class="btn btn-primary mb-3" onclick="openModal('category')">Tambah Kategori</button>
         <table class="table">
           <thead>
             <tr>
@@ -64,7 +64,7 @@
       <!-- Supplier Tab -->
       <div class="tab-pane fade" id="supplier" role="tabpanel">
         <h5>Manajemen Supplier</h5>
-        <button class="btn btn-primary mb-3" onclick="addItem('supplier')">Tambah Supplier</button>
+        <button class="btn btn-primary mb-3" onclick="openModal('supplier')">Tambah Supplier</button>
         <table class="table">
           <thead>
             <tr>
@@ -81,7 +81,7 @@
       <!-- Transaksi Tab -->
       <div class="tab-pane fade" id="transaksi" role="tabpanel">
         <h5>Manajemen Transaksi</h5>
-        <button class="btn btn-primary mb-3" onclick="addItem('transaction')">Tambah Transaksi</button>
+        <button class="btn btn-primary mb-3" onclick="openModal('transaction')">Tambah Transaksi</button>
         <table class="table">
           <thead>
             <tr>
@@ -98,120 +98,110 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dataModalLabel"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="dataForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nama</label>
+              <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3" id="additionalFields"></div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Data Initialization
-    let products = [];
-    let categories = [];
-    let suppliers = [];
-    let transactions = [];
+    let data = {
+      product: [],
+      category: [],
+      supplier: [],
+      transaction: [],
+    };
 
-    // Helper function to add items
-    function addItem(type) {
-      let name = prompt(`Masukkan nama ${type}:`);
-      if (!name) return;
+    function openModal(type) {
+      document.getElementById('dataModalLabel').textContent = `Tambah ${capitalize(type)}`;
+      document.getElementById('dataForm').onsubmit = (e) => saveData(e, type);
+      document.getElementById('name').value = '';
+      document.getElementById('additionalFields').innerHTML = getAdditionalFields(type);
+      new bootstrap.Modal(document.getElementById('dataModal')).show();
+    }
 
+    function getAdditionalFields(type) {
       if (type === 'product') {
-        let category = prompt("Masukkan kategori:");
-        let price = parseFloat(prompt("Masukkan harga:"));
-        if (!category || isNaN(price)) return alert("Data tidak valid!");
-        products.push({ id: products.length + 1, name, category, price });
-      } else if (type === 'category') {
-        categories.push({ id: categories.length + 1, name });
+        return `
+          <label for="category" class="form-label">Kategori</label>
+          <input type="text" class="form-control" id="category" required>
+          <label for="price" class="form-label mt-2">Harga</label>
+          <input type="number" class="form-control" id="price" required>
+        `;
       } else if (type === 'supplier') {
-        let contact = prompt("Masukkan kontak supplier:");
-        suppliers.push({ id: suppliers.length + 1, name, contact });
+        return `
+          <label for="contact" class="form-label">Kontak</label>
+          <input type="text" class="form-control" id="contact" required>
+        `;
       } else if (type === 'transaction') {
-        let product = prompt("Masukkan produk:");
-        let quantity = parseInt(prompt("Masukkan jumlah:"));
-        let total = parseFloat(prompt("Masukkan total:"));
-        if (!product || isNaN(quantity) || isNaN(total)) return alert("Data tidak valid!");
-        transactions.push({ id: transactions.length + 1, product, quantity, total });
+        return `
+          <label for="product" class="form-label">Produk</label>
+          <input type="text" class="form-control" id="product" required>
+          <label for="quantity" class="form-label mt-2">Jumlah</label>
+          <input type="number" class="form-control" id="quantity" required>
+          <label for="total" class="form-label mt-2">Total</label>
+          <input type="number" class="form-control" id="total" required>
+        `;
       }
-
-      renderData();
+      return '';
     }
 
-    // Helper function to delete items
-    function deleteItem(type, id) {
+    function saveData(e, type) {
+      e.preventDefault();
+      let newItem = { id: data[type].length + 1, name: document.getElementById('name').value };
       if (type === 'product') {
-        products = products.filter(item => item.id !== id);
-      } else if (type === 'category') {
-        categories = categories.filter(item => item.id !== id);
+        newItem.category = document.getElementById('category').value;
+        newItem.price = parseFloat(document.getElementById('price').value);
       } else if (type === 'supplier') {
-        suppliers = suppliers.filter(item => item.id !== id);
+        newItem.contact = document.getElementById('contact').value;
       } else if (type === 'transaction') {
-        transactions = transactions.filter(item => item.id !== id);
+        newItem.product = document.getElementById('product').value;
+        newItem.quantity = parseInt(document.getElementById('quantity').value);
+        newItem.total = parseFloat(document.getElementById('total').value);
       }
-      renderData();
+      data[type].push(newItem);
+      renderData(type);
+      bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
     }
 
-    // Render functions
-    function renderData() {
-      renderProducts();
-      renderCategories();
-      renderSuppliers();
-      renderTransactions();
-    }
-
-    function renderProducts() {
-      const productTable = document.getElementById('productTable');
-      productTable.innerHTML = products.map((item, index) => `
+    function renderData(type) {
+      let table = document.getElementById(`${type}Table`);
+      table.innerHTML = data[type].map((item, index) => `
         <tr>
           <td>${index + 1}</td>
           <td>${item.name}</td>
-          <td>${item.category}</td>
-          <td>${item.price}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteItem('product', ${item.id})">Hapus</button>
-          </td>
+          <td>${item.category || item.contact || item.product || ''}</td>
+          <td>${item.price || item.total || ''}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteData('${type}', ${item.id})">Hapus</button></td>
         </tr>
       `).join('');
     }
 
-    function renderCategories() {
-      const categoryTable = document.getElementById('categoryTable');
-      categoryTable.innerHTML = categories.map((item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.name}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteItem('category', ${item.id})">Hapus</button>
-          </td>
-        </tr>
-      `).join('');
+    function deleteData(type, id) {
+      data[type] = data[type].filter(item => item.id !== id);
+      renderData(type);
     }
 
-    function renderSuppliers() {
-      const supplierTable = document.getElementById('supplierTable');
-      supplierTable.innerHTML = suppliers.map((item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.name}</td>
-          <td>${item.contact}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteItem('supplier', ${item.id})">Hapus</button>
-          </td>
-        </tr>
-      `).join('');
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
     }
-
-    function renderTransactions() {
-      const transactionTable = document.getElementById('transactionTable');
-      transactionTable.innerHTML = transactions.map((item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.product}</td>
-          <td>${item.quantity}</td>
-          <td>${item.total}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteItem('transaction', ${item.id})">Hapus</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // Initial render
-    renderData();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
