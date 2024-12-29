@@ -220,3 +220,91 @@ function deleteTransaction(id) {
   saveData("transactions", transactions);
   renderTransactions();
 }
+
+
+
+function updateDashboard() {
+  document.getElementById("totalProducts").textContent = products.length;
+  document.getElementById("totalCategories").textContent = categories.length;
+  document.getElementById("totalSuppliers").textContent = suppliers.length;
+  document.getElementById("totalTransactions").textContent = transactions.length;
+}
+updateDashboard();
+
+
+
+document.getElementById("searchInput").addEventListener("input", function () {
+  const searchValue = this.value.toLowerCase();
+  const activeTab = document.querySelector(".tab-pane.active").id;
+
+  let rows;
+  if (activeTab === "products") {
+    rows = document.querySelectorAll("#productTable tbody tr");
+  } else if (activeTab === "categories") {
+    rows = document.querySelectorAll("#categoryList .list-group-item");
+  } else if (activeTab === "suppliers") {
+    rows = document.querySelectorAll("#supplierList .list-group-item");
+  } else if (activeTab === "transactions") {
+    rows = document.querySelectorAll("#transactionTable tbody tr");
+  }
+
+  rows.forEach((row) => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(searchValue) ? "" : "none";
+  });
+});
+
+
+
+function editProduct(id) {
+  const product = products.find((product) => product.id === id);
+  if (product) {
+    document.getElementById("productName").value = product.name;
+    document.getElementById("productCategory").value = product.category;
+    document.getElementById("productPrice").value = product.price;
+    document.getElementById("productStock").value = product.stock;
+
+    // Simpan perubahan
+    document.getElementById("productForm").onsubmit = function (e) {
+      e.preventDefault();
+      product.name = document.getElementById("productName").value;
+      product.category = document.getElementById("productCategory").value;
+      product.price = parseFloat(document.getElementById("productPrice").value);
+      product.stock = parseInt(document.getElementById("productStock").value);
+
+      saveData("products", products);
+      renderProducts();
+      this.reset();
+      document.getElementById("productForm").onsubmit = addProduct; // Kembali ke fungsi tambah
+    };
+  }
+}
+
+
+
+function validateForm(inputs) {
+  for (let input of inputs) {
+    if (input.value.trim() === "") {
+      alert("Semua kolom harus diisi!");
+      input.focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+
+
+
+
+if (!validateForm(this.elements)) return;
+
+
+
+
+
+
+
+
+
+
