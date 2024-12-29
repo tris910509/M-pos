@@ -149,27 +149,47 @@ function deleteSupplier(id) {
 // ========================== TRANSAKSI ==========================
 document.getElementById("transactionForm").addEventListener("submit", function (e) {
   e.preventDefault();
+
   const productId = parseInt(document.getElementById("transactionProduct").value);
   const quantity = parseInt(document.getElementById("transactionQuantity").value);
+  const payment = parseFloat(document.getElementById("transactionPayment").value);
 
   const product = products.find((product) => product.id === productId);
   if (product && product.stock >= quantity) {
+    const totalPrice = product.price * quantity;
+    const change = payment - totalPrice;
+    const status = change >= 0 ? "Lunas" : "Belum Lunas";
+
+    if (change < 0) {
+      alert("Uang yang dibayarkan kurang!");
+      return;
+    }
+
     const transaction = {
       id: Date.now(),
       product: product.name,
       quantity,
-      total: product.price * quantity,
+      totalPrice,
+      payment,
+      change,
+      status,
     };
 
-    product.stock -= quantity; // Update stok produk
+    // Update stok produk
+    product.stock -= quantity;
+
+    // Simpan transaksi
     transactions.push(transaction);
     saveData("transactions", transactions);
     saveData("products", products);
+
+    // Render ulang data
     renderTransactions();
     renderProducts();
   } else {
     alert("Stok tidak mencukupi atau produk tidak ditemukan!");
   }
+
   this.reset();
 });
 
@@ -182,7 +202,10 @@ function renderTransactions() {
         <td>${transaction.id}</td>
         <td>${transaction.product}</td>
         <td>${transaction.quantity}</td>
-        <td>${transaction.total}</td>
+        <td>${transaction.totalPrice}</td>
+        <td>${transaction.payment}</td>
+        <td>${transaction.change}</td>
+        <td><span class="badge bg-${transaction.status === "Lunas" ? "success" : "danger"}">${transaction.status}</span></td>
         <td>
           <button class="btn btn-danger btn-sm" onclick="deleteTransaction(${transaction.id})">Hapus</button>
         </td>
@@ -196,12 +219,4 @@ function deleteTransaction(id) {
   transactions = transactions.filter((transaction) => transaction.id !== id);
   saveData("transactions", transactions);
   renderTransactions();
-}
-
-function updateTransactionOptions() {
-  const transactionProduct = document.getElementById("transactionProduct");
-  transactionProduct.innerHTML = '<option value="" disabled selected>Pilih Produk</option>';
-  products.forEach((product) => {
-    transactionProduct.innerHTML += `<option value="${product.id}">${product.name}</option>`;
-  });
 }
