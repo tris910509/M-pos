@@ -3,143 +3,284 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manajemen Toko</title>
+  <title>Manajemen Penjualan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/file-saver"></script>
-  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    #app {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Sistem Manajemen Toko</h1>
-
-    <!-- Tabs -->
-    <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">Produk</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">Kategori</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="suppliers-tab" data-bs-toggle="tab" data-bs-target="#suppliers" type="button" role="tab">Supplier</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions" type="button" role="tab">Transaksi</button>
-      </li>
-    </ul>
-
-    <!-- Tab Content -->
-    <div class="tab-content" id="myTabContent">
-      <!-- Produk -->
-      <div class="tab-pane fade show active" id="products" role="tabpanel">
-        <h3 class="mt-4">Manajemen Produk</h3>
-        <form id="productForm" class="mt-3">
-          <div class="row">
-            <div class="col-md-4">
-              <input type="text" id="productName" class="form-control" placeholder="Nama Produk" required>
-            </div>
-            <div class="col-md-3">
-              <select id="productCategory" class="form-control" required>
-                <option value="" disabled selected>Pilih Kategori</option>
-              </select>
-            </div>
-            <div class="col-md-2">
-              <input type="number" id="productPrice" class="form-control" placeholder="Harga" required>
-            </div>
-            <div class="col-md-2">
-              <input type="number" id="productStock" class="form-control" placeholder="Stok" required>
-            </div>
-            <div class="col-md-1">
-              <button class="btn btn-primary" type="submit">Tambah</button>
-            </div>
+  <!-- Login Form -->
+  <div id="loginForm" class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <h3 class="text-center">Login Admin</h3>
+        <form id="adminLoginForm" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" required>
           </div>
-        </form>
-        <table class="table table-striped mt-4" id="productTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nama</th>
-              <th>Kategori</th>
-              <th>Harga</th>
-              <th>Stok</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <!-- Kategori -->
-      <div class="tab-pane fade" id="categories" role="tabpanel">
-        <h3 class="mt-4">Manajemen Kategori</h3>
-        <form id="categoryForm" class="mt-3">
-          <div class="row">
-            <div class="col-md-10">
-              <input type="text" id="categoryName" class="form-control" placeholder="Nama Kategori" required>
-            </div>
-            <div class="col-md-2">
-              <button class="btn btn-primary" type="submit">Tambah</button>
-            </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" required>
           </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
-        <ul class="list-group mt-4" id="categoryList"></ul>
-      </div>
-
-      <!-- Supplier -->
-      <div class="tab-pane fade" id="suppliers" role="tabpanel">
-        <h3 class="mt-4">Manajemen Supplier</h3>
-        <form id="supplierForm" class="mt-3">
-          <div class="row">
-            <div class="col-md-4">
-              <input type="text" id="supplierName" class="form-control" placeholder="Nama Supplier" required>
-            </div>
-            <div class="col-md-4">
-              <input type="text" id="supplierContact" class="form-control" placeholder="Kontak" required>
-            </div>
-            <div class="col-md-4">
-              <input type="text" id="supplierAddress" class="form-control" placeholder="Alamat" required>
-            </div>
-          </div>
-          <button class="btn btn-primary mt-3" type="submit">Tambah</button>
-        </form>
-        <ul class="list-group mt-4" id="supplierList"></ul>
-      </div>
-
-      <!-- Transaksi -->
-      <div class="tab-pane fade" id="transactions" role="tabpanel">
-        <h3 class="mt-4">Transaksi</h3>
-        <form id="transactionForm" class="mt-3">
-          <div class="row">
-            <div class="col-md-6">
-              <select id="transactionProduct" class="form-control" required>
-                <option value="" disabled selected>Pilih Produk</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <input type="number" id="transactionQuantity" class="form-control" placeholder="Jumlah" required>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary" type="submit">Tambah</button>
-            </div>
-          </div>
-        </form>
-        <table class="table table-striped mt-4" id="transactionTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Produk</th>
-              <th>Jumlah</th>
-              <th>Total Harga</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="app.js"></script>
+  <!-- Dashboard -->
+  <div id="app">
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3>Dashboard Manajemen Penjualan</h3>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+
+      <div id="notification" class="alert alert-success d-none" role="alert"></div>
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" id="produk-tab" data-bs-toggle="tab" data-bs-target="#produk" type="button">Produk</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="kategori-tab" data-bs-toggle="tab" data-bs-target="#kategori" type="button">Kategori</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="supplier-tab" data-bs-toggle="tab" data-bs-target="#supplier" type="button">Supplier</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="transaksi-tab" data-bs-toggle="tab" data-bs-target="#transaksi" type="button">Transaksi</button>
+        </li>
+      </ul>
+
+      <div class="tab-content mt-3" id="myTabContent">
+        <!-- Produk Tab -->
+        <div class="tab-pane fade show active" id="produk" role="tabpanel">
+          <h5>Manajemen Produk</h5>
+          <button class="btn btn-primary mb-3" onclick="openModal('product')">Tambah Produk</button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="productTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Kategori Tab -->
+        <div class="tab-pane fade" id="kategori" role="tabpanel">
+          <h5>Manajemen Kategori</h5>
+          <button class="btn btn-primary mb-3" onclick="openModal('category')">Tambah Kategori</button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="categoryTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Supplier Tab -->
+        <div class="tab-pane fade" id="supplier" role="tabpanel">
+          <h5>Manajemen Supplier</h5>
+          <button class="btn btn-primary mb-3" onclick="openModal('supplier')">Tambah Supplier</button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Kontak</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="supplierTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Transaksi Tab -->
+        <div class="tab-pane fade" id="transaksi" role="tabpanel">
+          <h5>Manajemen Transaksi</h5>
+          <button class="btn btn-primary mb-3" onclick="openModal('transaction')">Tambah Transaksi</button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Produk</th>
+                <th>Jumlah</th>
+                <th>Total</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Grafik -->
+      <div class="mt-4">
+        <h5>Grafik Penjualan</h5>
+        <canvas id="salesChart"></canvas>
+      </div>
+
+      <!-- Backup & Restore -->
+      <div class="mt-4">
+        <button class="btn btn-secondary" onclick="backupData()">Backup Data</button>
+        <input type="file" id="restoreInput" class="d-none" onchange="restoreData(event)">
+        <button class="btn btn-primary" onclick="document.getElementById('restoreInput').click()">Restore Data</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data Management
+    let products = [];
+    let categories = [];
+    let suppliers = [];
+    let transactions = [];
+
+    const adminCredentials = { username: "admin", password: "password123" };
+
+    // Login Logic
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (username === adminCredentials.username && password === adminCredentials.password) {
+        localStorage.setItem("isLoggedIn", true);
+        checkLogin();
+      } else {
+        alert("Username atau Password salah!");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      checkLogin();
+    }
+
+    function checkLogin() {
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (isLoggedIn) {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("app").style.display = "block";
+      } else {
+        document.getElementById("loginForm").style.display = "block";
+        document.getElementById("app").style.display = "none";
+      }
+    }
+
+    // CRUD Management
+    function openModal(type) {
+      const name = prompt(`Masukkan nama ${type}:`);
+      if (type === "product") {
+        const category = prompt("Masukkan kategori:");
+        const price = prompt("Masukkan harga:");
+        products.push({ id: products.length + 1, name, category, price });
+      } else if (type === "category") {
+        categories.push({ id: categories.length + 1, name });
+      } else if (type === "supplier") {
+        const contact = prompt("Masukkan kontak supplier:");
+        suppliers.push({ id: suppliers.length + 1, name, contact });
+      } else if (type === "transaction") {
+        const product = prompt("Masukkan produk:");
+        const quantity = prompt("Masukkan jumlah:");
+        const total = prompt("Masukkan total:");
+        transactions.push({ id: transactions.length + 1, product, quantity, total });
+      }
+      renderData();
+    }
+
+    function renderData() {
+      renderProducts();
+      renderCategories();
+      renderSuppliers();
+      renderTransactions();
+    }
+
+    function renderProducts() {
+      const tableBody = document.getElementById("productTable");
+      tableBody.innerHTML = "";
+      products.forEach((p) => {
+        tableBody.innerHTML += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.category}</td><td>${p.price}</td><td><button class="btn btn-danger btn-sm" onclick="deleteData('product', ${p.id})">Hapus</button></td></tr>`;
+      });
+    }
+
+    function renderCategories() {
+      const tableBody = document.getElementById("categoryTable");
+      tableBody.innerHTML = "";
+      categories.forEach((c) => {
+        tableBody.innerHTML += `<tr><td>${c.id}</td><td>${c.name}</td><td><button class="btn btn-danger btn-sm" onclick="deleteData('category', ${c.id})">Hapus</button></td></tr>`;
+      });
+    }
+
+    function renderSuppliers() {
+      const tableBody = document.getElementById("supplierTable");
+      tableBody.innerHTML = "";
+      suppliers.forEach((s) => {
+        tableBody.innerHTML += `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.contact}</td><td><button class="btn btn-danger btn-sm" onclick="deleteData('supplier', ${s.id})">Hapus</button></td></tr>`;
+      });
+    }
+
+    function renderTransactions() {
+      const tableBody = document.getElementById("transactionTable");
+      tableBody.innerHTML = "";
+      transactions.forEach((t) => {
+        tableBody.innerHTML += `<tr><td>${t.id}</td><td>${t.product}</td><td>${t.quantity}</td><td>${t.total}</td><td><button class="btn btn-danger btn-sm" onclick="deleteData('transaction', ${t.id})">Hapus</button></td></tr>`;
+      });
+    }
+
+    function deleteData(type, id) {
+      if (type === "product") {
+        products = products.filter((p) => p.id !== id);
+      } else if (type === "category") {
+        categories = categories.filter((c) => c.id !== id);
+      } else if (type === "supplier") {
+        suppliers = suppliers.filter((s) => s.id !== id);
+      } else if (type === "transaction") {
+        transactions = transactions.filter((t) => t.id !== id);
+      }
+      renderData();
+    }
+
+    // Backup & Restore
+    function backupData() {
+      const data = { products, categories, suppliers, transactions };
+      const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "backup.json";
+      link.click();
+    }
+
+    function restoreData(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const data = JSON.parse(e.target.result);
+        products = data.products || [];
+        categories = data.categories || [];
+        suppliers = data.suppliers || [];
+        transactions = data.transactions || [];
+        renderData();
+      };
+      reader.readAsText(file);
+    }
+
+    checkLogin();
+  </script>
 </body>
 </html>
